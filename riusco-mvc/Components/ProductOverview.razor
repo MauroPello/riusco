@@ -1,0 +1,161 @@
+@using riusco_mvc.Models
+@using System.IO
+@using System.Net.Http
+@using System.Text.Json
+@using Microsoft.AspNetCore.Components.Authorization
+@using Microsoft.AspNetCore.Components.Forms
+@using Microsoft.AspNetCore.Components.Routing
+@using Microsoft.AspNetCore.Components.Web
+@inject NavigationManager NavigationManager
+@using Microsoft.Extensions.Configuration
+@inject IConfiguration Configuration
+
+<form style="display: flex; align-items: center; justify-content: center; margin: 2vh 2vw" @onsubmit="UpdateProducts">
+  <div class="omrs-input-group">
+    <label class="omrs-input-underlined">
+      <input type="text" @bind="@query" placeholder=" ">
+      <span class="omrs-input-label">Search</span>
+      <span class="omrs-input-helper">Enter keywords</span>
+    </label>
+  </div>
+  <button type="submit" class="btn btn-primary" style="padding: .2rem .4rem; margin-left: 1rem; margin-bottom: 3rem;" >Search</button>
+</form>
+
+@if (products.Count == 0)
+{
+  <h2 style="text-align: center;">No products found!</h2>
+}
+<div class="card-columns">
+@for (var i = 0; i < products.Count; i++)
+  {
+    var product = products[i];
+    var spacing = "";
+    if (i == 0 || i == products.Count - 1)
+      spacing = "mb-3";
+    <div class="card @((MarkupString)spacing)">
+      <div class="card-img" style="background-image: url('/images/products/@product.Image');"></div>
+      <h5 class="card-header">@product.Name</h5>
+      <div class="card-footer">
+        <small class="text-muted">
+          <button @onclick="(e => SelectProduct(product))" data-toggle="modal" data-target="#productModal" class="btn btn-primary">More Info</button>
+        </small>
+      </div>
+    </div>
+  }
+</div>
+
+@if(selectedProduct != null)
+{
+  <div class="modal fade" id="productModal" tabindex="-1" role="dialog" aria-labelledby="productTitle" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="name">@selectedProduct.Name</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <div class="card">
+            <div class="card-img" style="background-image: url('/images/products/@selectedProduct.Image');">
+            </div>
+            <div class="card-body">
+              <div style="max-width: 100%">
+                <p class="card-text" style="font-size: 1.1rem; overflow: hidden; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical;">Description: @selectedProduct.Description</p>
+              </div>
+            </div>
+              <div class="card-footer" style="display: inherit">
+                <a class="btn btn-primary" style="margin-right: 2%" target="_blank" href='Home/Product/@selectedProduct.ProductID'>Product Page</a>
+                @if (userId < 0)
+                {
+                  <form method="post">
+                    <input type="hidden" name="productId" value="@selectedProduct.ProductID"/>
+                    <input type="hidden" name="ownerId" value="@selectedProduct.OwnerID"/>
+                    <button type="submit" class="btn btn-primary">Buy Now</button>
+                  </form>
+                }
+                else if (userId > 0)
+                {
+                  <a class="btn btn-primary" style="margin-right: 2%" target="_blank" href='Home/UpdateProducts/@selectedProduct.ProductID?name=@System.Net.WebUtility.UrlEncode(selectedProduct.Name)'>Edit</a>
+                  <form method="post">
+                    <input type="hidden" name="productId" value="@selectedProduct.ProductID"/>
+                    <button type="submit" name="button" value="delete" class="btn btn-danger">Delete</button>
+                  </form>
+                }
+              </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+}
+
+@code 
+{
+  [Parameter] public int userId { get; set; }
+  ProductDTO selectedProduct = new ProductDTO();
+  List<ProductDTO> products = new List<ProductDTO>();
+  protected string query {get; set;}
+  
+  protected override Task OnInitializedAsync()
+  {
+    products = GetProducts("").ToList();
+    return base.OnInitializedAsync();
+  }
+  
+  void SelectProduct(ProductDTO product)
+  {
+    selectedProduct = product;
+  }
+
+  void UpdateProducts()
+  {
+    products = GetProducts(query).ToList();
+  }
+
+  IEnumerable<ProductDTO> GetProducts(string query)
+  {
+    var handler = new HttpClientHandler {ServerCertificateCustomValidationCallback = (requestMessage, certificate, chain, policyErrors) => true};
+
+    var output = new List<ProductDTO>();
+    using var httpClient = new HttpClient(handler);
+    using var request = new HttpRequestMessage(new HttpMethod("GET"), $"{NavigationManager.BaseUri}Products/GetProductsByQuery");
+    var multipartContent = new MultipartFormDataContent
+    {
+      {new StringContent(query), "query"}
+    };
+    request.Content = multipartContent;
+    
+    var response = httpClient.Send(request);
+
+    response.EnsureSuccessStatusCode();
+
+    using var streamReader = new StreamReader(response.Content.ReadAsStream());
+    var objects = JsonSerializer.Deserialize<ProductDTO[]>(streamReader.ReadToEnd(), new JsonSerializerOptions{PropertyNameCaseInsensitive = true});
+    foreach (var obj in objects)
+    {
+      if (!obj.IsAvailable)
+        continue;
+      if (userId == 0)
+      {
+        output.Add(obj);
+      }
+      else
+      {
+        var ownerId = obj.OwnerID;
+        if (userId < 0)
+        {
+          if (ownerId != -userId)
+            output.Add(obj);
+        }
+        else
+        {
+          if (ownerId == userId)
+            output.Add(obj);
+        }
+      }
+    }
+
+    return output.AsEnumerable();
+  }
+}

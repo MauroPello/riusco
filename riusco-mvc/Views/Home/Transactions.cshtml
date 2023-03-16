@@ -1,0 +1,78 @@
+@model TransactionsViewModel
+@{
+    ViewData["Title"] = "Transactions";
+}
+
+@foreach (var transaction in Model.UserTransactions)
+{
+if (transaction != null)
+{
+    bool owner = transaction.Seller.UserID == Context.Session.GetInt32("userId").Value; 
+    <div class="transaction-container">
+        <div class="transaction-info-container">
+            <a href="/Home/Product/@transaction.Product.ProductID" style="color: black; text-decoration: none;" target="_blank"><div style="display: flex; align-items: center;">
+                <div style="background-image: url('/images/products/@transaction.Product.Image');" class="transaction-product-img"></div>
+                <div style="display: flex; flex-direction: column; align-items: center; margin-left: 1rem; text-align: center;">
+                    <span>Product</span>
+                    <b>@transaction.Product.Name</b>
+                </div>
+            </div></a>
+            <a href="/Home/User/@transaction.Seller.UserID" style="color: black; text-decoration: none;" target="_blank"><div style="display: flex; align-items: center;">
+                <img src="/images/users/@transaction.Seller.Image" style="width: 5rem; height: 5rem; border-radius: 5rem"/>
+                <div style="display: flex; flex-direction: column; align-items: center; margin-left: 1rem; text-align: center;">
+                    <span>Seller</span>
+                    <b>@Html.Raw(owner ? "You" : transaction.Seller.Name)</b>
+                </div>
+            </div></a>
+            <a href="/Home/User/@transaction.Buyer.UserID" style="color: black; text-decoration: none;" target="_blank"><div style="display: flex; align-items: center;">
+                <img src="/images/users/@transaction.Buyer.Image" style="width: 5rem; height: 5rem; border-radius: 5rem"/>
+                <div style="display: flex; flex-direction: column; align-items: center; margin-left: 1rem; text-align: center;">
+                    <span>Buyer</span>
+                    <b>@Html.Raw(owner ? transaction.Buyer.Name : "You")</b>
+                </div>
+            </div></a>
+            <div style="display: flex; align-items: center;">
+                <div style="display: flex; flex-direction: column; align-items: center; text-align: center;">
+                    <span>State</span>
+                    <b style="color: @Html.Raw(transaction.State == "Completed" ? "green" : (transaction.State == "Closed" ? "red" : "black"))">@transaction.State</b>
+                    <b>@transaction.LastUpdate.ToString(System.Globalization.CultureInfo.CurrentCulture)</b>
+                </div>
+            </div>
+            @if (transaction.State == "Completed")
+            {
+                <div style="display: flex; align-items: center;">
+                    <h4 style="margin: auto; color: @Html.Raw(owner ? "green" : "red")"><b>@Html.Raw(owner ? "+" : "-")1</b></h4>
+                    <img src="/images/green_coin.png" alt="green-coin" style="width: 50px; height: 50px; margin-left: .5rem;"/>
+                </div>
+            }
+        </div>
+        @if (transaction.State != "Closed" && transaction.State != "Completed")
+        {
+            <form method="post" style="display: flex; margin-top: 1rem; justify-content: space-evenly; width: 100%">
+                <input type="hidden" name="transactionId" value="@transaction.TransactionID"/>
+                <a class="btn btn-primary" style="margin-right: .5rem;" target="_blank" href="mailto:@Html.Raw(owner ? transaction.Buyer.Email : transaction.Seller.Email)">Contact</a>
+                <button class="btn btn-danger" name="button" value="close">Close without Success</button>
+                @if (Context.Session.GetInt32("userId").Value == transaction.Buyer.UserID)
+                {
+                    <button class="btn btn-primary" name="button" value="complete">Complete with Success</button>
+                }
+            </form>
+        }
+    </div>
+}
+}   
+<style>
+    .btn {
+        font-size: 1rem!important;
+    }
+    
+    .transaction-product-img {
+      width: 5rem; 
+      height: 5rem; 
+      border-radius: 5rem;
+      vertical-align: bottom;
+      background-position: center;
+      background-repeat: no-repeat;
+      background-size: cover;
+    }
+</style>

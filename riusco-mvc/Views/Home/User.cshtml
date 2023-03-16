@@ -1,0 +1,19 @@
+@model UserViewModel
+@{
+    ViewData["Title"] = Model.Name;
+}
+
+<head>
+    <base href="~/" />
+</head>
+
+<div class="text-center">
+    <img alt="profile_pic" src="/images/users/@Model.Image" style="border-radius: 50%; width: 25vh; height: 25vh;"/>
+    <p class="display-4" style="font-size: 6vh; font-weight: bold; margin-bottom: 5vh">@Model.Name</p>
+    <p class="display-4" style="font-size: 3.5vh;">Email: <a href="mailto:@Model.Email">@Model.Email</a></p>
+    <p class="display-4" style="font-size: 3.5vh;">City: @Model.City</p>
+    <p class="display-4" style="font-size: 4vh; margin-top: 5vh; font-weight: bold">Products listed</p>
+    @(await Html.RenderComponentAsync<riusco_mvc.Components.ProductOverview>(RenderMode.ServerPrerendered, new { userId = Model.UserId }))
+</div>
+
+<script src="_framework/blazor.server.js"></script>

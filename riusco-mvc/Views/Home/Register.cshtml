@@ -1,0 +1,93 @@
+@model GenericUserViewModel
+@{
+    ViewData["Title"] = "Register";
+    Layout = "NotLoggedLayout";
+}
+
+@if (Model.Outcome == "error")
+{
+    <div class="alert alert-danger alert-dismissible" style="z-index: 10000; margin-top: 1%; margin-left: 10%; margin-right: 10%;">
+        <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
+        Error Occurred!
+    </div>
+}
+
+<div class="text-center">
+    <h1 class="display-4">@ViewData["Title"]</h1>
+</div>
+
+<form class="form-horizontal" method="post" enctype="multipart/form-data">
+    <div class="omrs-input-group">
+        <label class="omrs-input-underlined">
+            <input type="email" name="email" value="@Model.Email" placeholder=" " required>
+            <span class="omrs-input-label">Email</span>
+            <span class="omrs-input-helper">Enter email</span>
+        </label>
+    </div>
+    <div class="omrs-input-group">
+        <label class="omrs-input-underlined">
+            <input type="text" name="name" placeholder=" " required>
+            <span class="omrs-input-label">Name</span>
+            <span class="omrs-input-helper">Enter name</span>
+        </label>
+    </div>
+    <div class="omrs-input-group">
+        <label class="omrs-input-underlined">
+            <input type="password" name="password" pattern=".{8,24}" data-toggle="password" placeholder=" " required>
+            <span class="omrs-input-label">Password</span>
+            <span class="omrs-input-helper">Enter password (8-24 chars)</span>
+            <svg xmlns="http://www.w3.org/2000/svg" class="password-toggle" width="24" height="24" viewBox="0 0 24 24"><path fill="true" 
+                                                                                                                             d="M 12.00,3.82
+                                                                                                          C 6.55,3.82 1.89,7.21 0.00,12.00
+                                                                                                            1.89,16.79 6.55,20.18 12.00,20.18
+                                                                                                            17.46,20.18 22.11,16.79 24.00,12.00
+                                                                                                            22.11,7.21 17.46,3.82 12.00,3.82 Z
+                                                                                                          M 12.00,17.45
+                                                                                                          C 8.99,17.45 6.55,15.01 6.55,12.00
+                                                                                                            6.55,8.99 8.99,6.55 12.00,6.55
+                                                                                                            15.01,6.55 17.45,8.99 17.45,12.00
+                                                                                                            17.45,15.01 15.01,17.45 12.00,17.45 Z
+                                                                                                          M 12.00,8.73
+                                                                                                          C 10.19,8.73 8.73,10.19 8.73,12.00
+                                                                                                            8.73,13.81 10.19,15.27 12.00,15.27
+                                                                                                            13.81,15.27 15.27,13.81 15.27,12.00
+                                                                                                            15.27,10.19 13.81,8.73 12.00,8.73 Z" /></svg>
+        </label>
+    </div>
+    <div class="omrs-input-group">
+        <label class="omrs-input-underlined">
+            <input type="text" name="city" placeholder=" " required>
+            <span class="omrs-input-label">City</span>
+            <span class="omrs-input-helper">Enter city</span>
+        </label>
+    </div>
+    <div style="margin-bottom: 1.5rem;">
+        <h4 style="margin-left: 0.8375rem; color: grey">Image</h4>
+        <div class="image-upload-wrap">
+            <input class="file-upload-input" type='file' name="image" onchange="readURL(this);" accept="image/*" />
+            <div class="drag-text">
+                <h3>Drag and drop a file or select add Image</h3>
+            </div>
+        </div>
+        <div class="file-upload-content">
+            <img class="file-upload-image" src="#" alt="your image"/>
+            <div class="image-title-wrap">
+                <button type="button" onclick="removeUpload()" class="btn btn-danger">Remove <span class="image-title"> Image</span></button>
+            </div>
+        </div>
+    </div>
+    <div class="form-group">
+        <button type="submit" class="btn btn-primary">Register</button>
+    </div>
+</form>
+
+@section Scripts {
+<script>
+    $(document).ready(function () {
+        $('.custom-file-input').on("change", function () {
+            var fileName = $(this).val().split("\\").pop();
+            $(this).next('.custom-file-label').html(fileName);
+        });
+    });
+</script>
+}

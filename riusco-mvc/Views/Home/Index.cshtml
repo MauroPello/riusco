@@ -1,0 +1,234 @@
+﻿@model GenericUserViewModel
+@{
+    ViewData["Title"] = "Rius.Co.";
+    Layout = "NotLoggedLayout";
+}
+
+<head>
+    <base href="~/" />
+</head>
+
+<div>
+    <h2>
+        Rius.Co. is the newest e-commerce for collaborative reuse, a Waste-Free marketplace where users can buy and sell used goods using Green Coins as currency. 
+    </h2>
+</div>
+<div style="background-color: #ebebeb;" class="video-container">
+    <div class="video-wrapper" style="margin: auto;">
+        <iframe src="https://www.youtube.com/embed/2uywarXhFZ0?autoplay=1&fs=0&loop=1" allowfullscreen frameborder="0"></iframe>
+    </div>
+</div>
+<div>
+    <h2>
+        Rius.Co. enables you to get second-hand goods without spending a penny! You can even give away items that you dont'use in order to get some Green Coins and free up space in your house! Start fighting climate change now! Create your personal account on Rius.Co. by filling the form below!
+    </h2>
+</div>
+<div style="display: flex; justify-content: space-evenly; align-items: center; padding-top: 0;">
+    <img src="images/logo.png" style="width: auto; height: auto; max-height: 20vh; max-width: 25vw;" alt="riusco_logo"/>
+    <img src="images/riusco.png" style="width: auto; height: auto; max-height: 20vh; max-width: 25vw;" alt="riusco"/>
+    <img src="images/green_coin.png" style="width: auto; height: auto; max-height: 20vh; max-width: 25vw;" alt="green_coin"/>
+</div>
+<div style="background-color: #ebebeb;" id="formdiv">
+    @if (Model.Outcome == "error")
+    {
+        <div class="alert alert-danger alert-dismissible" style="z-index: 10000; margin-top: 1%; margin-left: 10%; margin-right: 10%;">
+            <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
+            Error Occured!
+        </div>
+    }
+    <div style="display: flex; justify-content: center; width: 100%;">
+        <form class="form-horizontal form-home" method="post" enctype="multipart/form-data" id="login-container" style="display: block;">
+            <div class="omrs-input-group">
+                <label class="omrs-input-underlined">
+                    <input type="email" id="login-email" name="email" value="@Model.Email" placeholder=" " required>
+                    <span class="omrs-input-label">Email</span>
+                    <span class="omrs-input-helper">Enter email</span>
+                </label>
+            </div>
+            <div class="omrs-input-group">
+                <label class="omrs-input-underlined">
+                    <input type="password" id="login-password" name="password" pattern=".{8,24}" data-toggle="password" placeholder=" " required>
+                    <span class="omrs-input-label">Password</span>
+                    <span class="omrs-input-helper">Enter password (8-24 chars)</span>
+                    <svg xmlns="http://www.w3.org/2000/svg" class="password-toggle" width="24" height="24" viewBox="0 0 24 24">
+                        <path fill="true"
+                              d="M 12.00,3.82
+                                                                                                              C 6.55,3.82 1.89,7.21 0.00,12.00
+                                                                                                                1.89,16.79 6.55,20.18 12.00,20.18
+                                                                                                                17.46,20.18 22.11,16.79 24.00,12.00
+                                                                                                                22.11,7.21 17.46,3.82 12.00,3.82 Z
+                                                                                                              M 12.00,17.45
+                                                                                                              C 8.99,17.45 6.55,15.01 6.55,12.00
+                                                                                                                6.55,8.99 8.99,6.55 12.00,6.55
+                                                                                                                15.01,6.55 17.45,8.99 17.45,12.00
+                                                                                                                17.45,15.01 15.01,17.45 12.00,17.45 Z
+                                                                                                              M 12.00,8.73
+                                                                                                              C 10.19,8.73 8.73,10.19 8.73,12.00
+                                                                                                                8.73,13.81 10.19,15.27 12.00,15.27
+                                                                                                                13.81,15.27 15.27,13.81 15.27,12.00
+                                                                                                                15.27,10.19 13.81,8.73 12.00,8.73 Z"/></svg>
+                </label>
+            </div>
+            <div class="form-group" style="text-align: center;">
+                <button id="login-button" type="submit" name="button" value="login" class="btn btn-primary" style="display: none;">Submit</button>
+            </div>
+        </form>
+        <form class="form-horizontal form-home" method="post" enctype="multipart/form-data" id="register-container" style="display: none;">
+            <div class="omrs-input-group">
+                <label class="omrs-input-underlined">
+                    <input type="email" id="register-email" name="email" value="@Model.Email" placeholder=" " required>
+                    <span class="omrs-input-label">Email</span>
+                    <span class="omrs-input-helper">Enter email</span>
+                </label>
+            </div>
+            <div class="omrs-input-group">
+                <label class="omrs-input-underlined">
+                    <input type="text" name="name" placeholder=" " required>
+                    <span class="omrs-input-label">Name</span>
+                    <span class="omrs-input-helper">Enter name</span>
+                </label>
+            </div>
+            <div class="omrs-input-group">
+                <label class="omrs-input-underlined">
+                    <input type="password" id="register-password" name="password" pattern=".{8,24}" data-toggle="password" placeholder=" " required>
+                    <span class="omrs-input-label">Password</span>
+                    <span class="omrs-input-helper">Enter password (8-24 chars)</span>
+                    <svg xmlns="http://www.w3.org/2000/svg" class="password-toggle" width="24" height="24" viewBox="0 0 24 24">
+                        <path fill="true"
+                              d="M 12.00,3.82
+                                                                                                              C 6.55,3.82 1.89,7.21 0.00,12.00
+                                                                                                                1.89,16.79 6.55,20.18 12.00,20.18
+                                                                                                                17.46,20.18 22.11,16.79 24.00,12.00
+                                                                                                                22.11,7.21 17.46,3.82 12.00,3.82 Z
+                                                                                                              M 12.00,17.45
+                                                                                                              C 8.99,17.45 6.55,15.01 6.55,12.00
+                                                                                                                6.55,8.99 8.99,6.55 12.00,6.55
+                                                                                                                15.01,6.55 17.45,8.99 17.45,12.00
+                                                                                                                17.45,15.01 15.01,17.45 12.00,17.45 Z
+                                                                                                              M 12.00,8.73
+                                                                                                              C 10.19,8.73 8.73,10.19 8.73,12.00
+                                                                                                                8.73,13.81 10.19,15.27 12.00,15.27
+                                                                                                                13.81,15.27 15.27,13.81 15.27,12.00
+                                                                                                                15.27,10.19 13.81,8.73 12.00,8.73 Z"/></svg>
+                </label>
+            </div>
+            <div class="omrs-input-group">
+                <label class="omrs-input-underlined">
+                    <input type="text" name="city" placeholder=" " required>
+                    <span class="omrs-input-label">City</span>
+                    <span class="omrs-input-helper">Enter city</span>
+                </label>
+            </div>
+            <div style="margin-bottom: 1.5rem;">
+                <h4 style="margin-left: 0.8375rem; color: grey;">Image</h4>
+                <div class="image-upload-wrap">
+                    <input class="file-upload-input" type='file' name="image" onchange="readURL(this);" accept="image/*"/>
+                    <div class="drag-text">
+                        <h3>Drag and drop a file or select add Image</h3>
+                    </div>
+                </div>
+                <div class="file-upload-content">
+                    <img class="file-upload-image" src="#" alt="your image"/>
+                    <div class="image-title-wrap">
+                        <button type="button" onclick="removeUpload()" class="btn btn-danger">Remove <span class="image-title"> Image</span></button>
+                    </div>
+                </div>
+            </div>
+            <div class="form-group" style="text-align: center;">
+                <button id="register-button" type="submit" name="button" value="register" class="btn btn-primary" style="display: none;">Submit</button>
+            </div>
+        </form>
+    </div>
+    <div style="display: flex; justify-content: center; width: 100%;">
+        <button class="btn btn-primary" onclick="login();" style="margin-right: 1vw; font-size: 1.5rem;">Login</button>
+        <button class="btn btn-primary" onclick="register();" style="font-size: 1.5rem;">Register</button>
+    </div>
+</div>
+
+<div>
+    <h2>Check out the currently available products!</h2>
+    @(await Html.RenderComponentAsync<riusco_mvc.Components.ProductOverview>(RenderMode.ServerPrerendered, new { userId = 0 }))
+</div>
+
+@section Scripts {
+<script src="_framework/blazor.server.js"></script>
+<script>
+    window.onload = function () {
+        if (getParameterByName("Outcome") != null || getParameterByName("Email") != null)
+            document.getElementById("formdiv").scrollIntoView();
+    }
+
+    $(document).ready(function () {
+        $('.custom-file-input').on("change", function () {
+            var fileName = $(this).val().split("\\").pop();
+            $(this).next('.custom-file-label').html(fileName);
+        });
+    });
+
+    function login() {
+        if (document.getElementById("login-container").style.display === "block") {
+            document.getElementById("login-button").click();
+        }
+        else {
+            if (document.getElementById("register-email").value !== "") {
+                document.getElementById("login-email").value = document.getElementById("register-email").value;
+                console.log(document.getElementById("register-email").value);
+            }
+            if (document.getElementById("register-password").value !== "") {
+                document.getElementById("login-password").value = document.getElementById("register-password").value;
+                console.log(document.getElementById("register-password").value);
+            }
+            document.getElementById("login-container").style.display = "block";
+            document.getElementById("register-container").style.display = "none";
+        }
+    }
+
+    function register() {
+        if (document.getElementById("register-container").style.display === "block") {
+            document.getElementById("register-button").click();
+        }
+        else {
+            if (document.getElementById("login-email").value !== "") {
+                document.getElementById("register-email").value = document.getElementById("login-email").value;
+                console.log(document.getElementById("login-email").value);
+            }
+            if (document.getElementById("login-password").value !== "") {
+                document.getElementById("register-password").value = document.getElementById("login-password").value;
+                console.log(document.getElementById("login-password").value);
+            }
+            document.getElementById("login-container").style.display = "none";
+            document.getElementById("register-container").style.display = "block";
+        }
+    }
+</script>
+}
+
+<style>
+    .container {
+        margin: 0!important;
+        padding: 0!important;
+        width: 100%!important;
+        max-width: 100%!important;
+    }
+    
+    main>div {
+        padding: 5vh 10vw;
+    }
+    
+    h2 {
+       font-size: max(20px, 2.5vw); 
+       font-weight: 550; 
+       text-align: center;
+    }
+    
+    :root {
+      --omrs-text-size: 1.25rem;
+    }
+    
+    .omrs-input-underlined > input,
+    .omrs-input-filled > input {
+      height: 4rem;
+      min-height: 4rem;
+      padding-bottom: 0;
+    }
+</style>

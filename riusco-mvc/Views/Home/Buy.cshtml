@@ -1,0 +1,12 @@
+@model BuyViewModel
+@{
+    ViewData["Title"] = "Buy Products";
+}
+
+<head>
+    <base href="~/" />
+</head>
+
+@(await Html.RenderComponentAsync<riusco_mvc.Components.ProductOverview>(RenderMode.ServerPrerendered, new { userId = -Model.UserId }))
+
+<script src="_framework/blazor.server.js"></script>

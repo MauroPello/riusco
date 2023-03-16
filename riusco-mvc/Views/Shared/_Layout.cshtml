@@ -1,0 +1,104 @@
+﻿@{
+    var userId = Context.Session.GetInt32("userId");
+    UserDTO user = null;
+    
+    if (userId.HasValue)
+    {
+        var handler = new HttpClientHandler
+        {
+            ServerCertificateCustomValidationCallback =
+                (requestMessage, certificate, chain, policyErrors) => true
+        };
+
+        using (var httpClient = new HttpClient(handler))
+        {
+            using (var request = new HttpRequestMessage(new HttpMethod("GET"),
+                $"https://{Context.Request.Host}/Users/GetUser/{userId.Value}"))
+            {
+                var multipartContent = new MultipartFormDataContent
+                {
+                    {new StringContent(Configuration["apiKey"]), "apiKey"}
+                };
+                request.Content = multipartContent;
+
+                var response = httpClient.Send(request);
+
+                try
+                {
+                    response.EnsureSuccessStatusCode();
+                    using (var reader = new StreamReader(response.Content.ReadAsStream()))
+                    {
+                        user = JsonSerializer.Deserialize<UserDTO>(reader.ReadToEnd(), new JsonSerializerOptions{PropertyNameCaseInsensitive = true});
+                    }
+                }
+                catch (Exception) { } 
+            }
+        }
+    }
+}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>@ViewData["Title"]</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css"/>
+    <link rel="stylesheet" href="~/css/site.css"/>
+</head>
+<body>
+<header>
+    <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
+        <div class="container">
+            <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index"><img src="/images/riusco.png" style="width: 15vw; min-width: 100px; max-width: 250px;" /></a>
+            @if (user != null)
+            {
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target=".navbar-collapse" aria-controls="navbarSupportedContent"
+                    aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
+                <ul class="navbar-nav flex-grow-1">
+
+                    <li class="nav-item">
+                        <a class="nav-link text-dark" asp-area="" asp-action="Buy">Buy</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link text-dark" asp-area="" asp-action="Sell">Sell</a>
+                    </li>
+                    <li class="nav-item ml-sm-auto" style="display: flex; align-items: center; margin-right: 1rem;">
+                        <div style="display: flex; align-items: center;">
+                            <span style="margin-right: .5rem; font-weight: 500; font-size: 1.25rem;">@user.Balance</span>
+                            <img src="/images/green_coin.png" alt="green-coin" width="25px" height="25px"/>
+                        </div>
+                    </li>
+                    <li class="nav-item dropdown">
+                        <a style="font-size: var(--navbar-font-size);" class="nav-link text-dark dropdown-toggle" href="#" id="navbarDropdownMenuLink" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            @user.Name
+                        </a>
+                        <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
+                            <a style="font-size: var(--navbar-font-size);" class="dropdown-item" asp-area="" asp-action="Profile">Profile</a>
+                            <a style="font-size: var(--navbar-font-size);" class="dropdown-item" asp-area="" asp-action="Transactions">Transactions</a>
+                            <a style="font-size: var(--navbar-font-size);" class="dropdown-item" asp-area="" asp-action="LogOut">Sign Out</a>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+            }
+        </div>
+    </nav>
+</header>
+<div class="container">
+    <main role="main" class="pb-3">
+        @RenderBody()
+    </main>
+</div>
+
+<script src="~/lib/jquery/dist/jquery.min.js"></script>
+<script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+<script src="~/js/site.js" asp-append-version="true"></script>
+
+@await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

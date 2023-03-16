@@ -1,0 +1,12 @@
+@{
+    ViewData["Title"] = "Products";
+    Layout = "NotLoggedLayout";
+}
+
+<head>
+    <base href="~/" />
+</head>
+
+@(await Html.RenderComponentAsync<riusco_mvc.Components.ProductOverview>(RenderMode.ServerPrerendered, new { userId = 0 }))
+
+<script src="_framework/blazor.server.js"></script>

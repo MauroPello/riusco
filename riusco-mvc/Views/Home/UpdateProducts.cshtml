@@ -1,0 +1,77 @@
+@model GenericProductViewModel
+@{
+    ViewData["Title"] = "Update Products";
+}
+
+@if (Model.Outcome == "error")
+{
+    <div class="alert alert-danger alert-dismissible" style="z-index: 10000; margin-top: 1%; margin-left: 10%; margin-right: 10%;">
+        <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
+        Error Occurred!
+    </div>
+}
+
+@if (Model.Outcome == "success")
+{
+    <div class="alert alert-info alert-dismissible" style="z-index: 10000; margin-top: 1%; margin-left: 10%; margin-right: 10%;">
+        <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
+        Product Updated!
+    </div>
+}
+
+<div class="text-center">
+    <h1 class="display-4">@ViewData["Title"]</h1>
+</div>
+
+<form class="form-horizontal" method="post" enctype="multipart/form-data">
+    <div class="omrs-input-group">
+        <label class="omrs-input-underlined">
+            <input type="text" name="id" value="@Model.Id" placeholder=" " required>
+            <span class="omrs-input-label">Product ID</span>
+            <span class="omrs-input-helper">Enter product ID</span>
+        </label>
+    </div>
+    <div class="omrs-input-group">
+        <label class="omrs-input-underlined">
+            <input type="text" name="name" value="@Model.Name" placeholder=" ">
+            <span class="omrs-input-label">Name</span>
+            <span class="omrs-input-helper">Enter new name</span>
+        </label>
+    </div>
+    <div class="omrs-input-group">
+        <label class="omrs-input-underlined">
+            <textarea name="description" rows="3" placeholder=" " ></textarea>
+            <span class="omrs-input-label">Description</span>
+            <span class="omrs-input-helper">Enter new description</span>
+        </label>
+    </div>
+    <div style="margin-bottom: 1.5rem;">
+        <h4 style="margin-left: 0.8375rem; color: grey">Image</h4>
+        <div class="image-upload-wrap">
+            <input class="file-upload-input" type='file' name="image" onchange="readURL(this);" accept="image/*" />
+            <div class="drag-text">
+                <h3>Drag and drop a file or select add Image</h3>
+            </div>
+        </div>
+        <div class="file-upload-content">
+            <img class="file-upload-image" src="#" alt="your image"/>
+            <div class="image-title-wrap">
+                <button type="button" onclick="removeUpload()" class="btn btn-danger">Remove <span class="image-title">Image</span></button>
+            </div>
+        </div>
+    </div>
+    <div class="form-group">
+        <button type="submit" class="btn btn-primary">Submit</button>
+    </div>
+</form>  
+
+@section Scripts {
+<script>
+    $(document).ready(function () {
+        $('.custom-file-input').on("change", function () {
+            var fileName = $(this).val().split("\\").pop();
+            $(this).next('.custom-file-label').html(fileName);
+        });
+    });
+</script>
+}

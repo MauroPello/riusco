@@ -1,0 +1,140 @@
+@model ProfileViewModel
+@{
+    ViewData["Title"] = Model.Name;
+}
+
+@if (Model.Outcome == "error")
+{
+    <div class="alert alert-danger alert-dismissible" style="z-index: 10000; margin-top: 1%; margin-left: 10%; margin-right: 10%;">
+        <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
+        Error! Couldn't update!
+    </div>
+}
+
+@if (Model.Outcome == "success")
+{
+    <div class="alert alert-info alert-dismissible" style="z-index: 10000; margin-top: 1%; margin-left: 10%; margin-right: 10%;">
+        <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
+        Profile Updated!
+    </div>
+}
+
+<div class="text-center">
+    <div class="profile-picture">
+        <img alt="profile_pic" src="/images/users/@Model.Image" class="pic"/>
+        <input class="custom-file-input" type="file" id="image-input">
+        <img alt="edit_profile_pic" src="/images/edit_profile_picture.png" class="edit-pic"/>
+    </div>
+    <p class="display-4" style="font-size: 5vh; font-weight: bold">@Model.Name</p>
+    <form method="post" style="max-width: 80%; margin: auto;">
+        <div class="omrs-input-group">
+            <label class="omrs-input-underlined">
+                <input type="text" name="name" value="@Model.Name" placeholder=" " >
+                <span class="omrs-input-label">Name</span>
+                <span class="omrs-input-helper">Enter new name</span>
+            </label>
+        </div>
+        <div class="omrs-input-group">
+            <label class="omrs-input-underlined">
+                <input type="email" name="email" value="@Model.Email" placeholder=" " >
+                <span class="omrs-input-label">Email</span>
+                <span class="omrs-input-helper">Enter new email</span>
+            </label>
+        </div>
+        <div class="omrs-input-group">
+            <label class="omrs-input-underlined">
+                <input type="text" name="city" value="@Model.City" placeholder=" " >
+                <span class="omrs-input-label">City</span>
+                <span class="omrs-input-helper">Enter new city</span>
+            </label>
+        </div>
+        <div class="omrs-input-group">
+            <label class="omrs-input-underlined">
+                <input type="password" name="password" pattern=".{8,24}" placeholder=" " data-toggle="password">
+                <span class="omrs-input-label">Password</span>
+                <span class="omrs-input-helper">Enter new password (8-24 chars)</span>
+                <svg xmlns="http://www.w3.org/2000/svg" class="password-toggle" width="24" height="24" viewBox="0 0 24 24"><path fill="true" 
+                                                                                                                                 d="M 12.00,3.82
+                                                                                                              C 6.55,3.82 1.89,7.21 0.00,12.00
+                                                                                                                1.89,16.79 6.55,20.18 12.00,20.18
+                                                                                                                17.46,20.18 22.11,16.79 24.00,12.00
+                                                                                                                22.11,7.21 17.46,3.82 12.00,3.82 Z
+                                                                                                              M 12.00,17.45
+                                                                                                              C 8.99,17.45 6.55,15.01 6.55,12.00
+                                                                                                                6.55,8.99 8.99,6.55 12.00,6.55
+                                                                                                                15.01,6.55 17.45,8.99 17.45,12.00
+                                                                                                                17.45,15.01 15.01,17.45 12.00,17.45 Z
+                                                                                                              M 12.00,8.73
+                                                                                                              C 10.19,8.73 8.73,10.19 8.73,12.00
+                                                                                                                8.73,13.81 10.19,15.27 12.00,15.27
+                                                                                                                13.81,15.27 15.27,13.81 15.27,12.00
+                                                                                                                15.27,10.19 13.81,8.73 12.00,8.73 Z" /></svg>
+            </label>
+        </div>
+        <div>
+            <button type="submit" class="btn btn-primary" style="margin: .2rem;" name="button" value="update">Update Account</button>
+            <a class="btn btn-primary" target="_blank" style="margin: .2rem;" href='https://@Context.Request.Host/Home/User/@Model.UserId'>View Public Page</a>
+            <button type="button" class="btn btn-primary" style="margin: .2rem;" onclick="downloadApiKey('@Model.ApiKey')">Get Api Key</button>
+        </div>
+        <div>
+            <button type="button" class="btn btn-danger" style="margin: .2rem;" data-toggle="modal" data-target="#deleteAccountModal">Delete Account</button>
+            <button type="submit" class="btn btn-danger" style="margin: .2rem;" name="button" value="sign_out">Sign Out</button>
+        </div>
+    </form>
+</div>
+
+<div class="modal fade" id="deleteAccountModal" tabindex="-1" role="dialog" aria-labelledby="deleteAccountModal" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLongTitle">Delete Account</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                Are your sure that you want to delete your account?
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary" data-dismiss="modal">Close</button>
+                <form method="post">
+                    <button type="submit" class="btn btn-danger" name="button" value="delete">Delete Account</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+            $('#image-input').on("change", function () {
+                var formData = new FormData();
+                formData.append("image", $(this).prop('files')[0]);
+                formData.append("apiKey", "@Model.ApiKey");
+                $.ajax({
+                    type: "PUT",
+                    url: window.location.origin + "/Users/UpdatePicture/@Model.UserId",
+                    data: formData,
+                    success: function (){
+                        window.location.reload();
+                    },
+                    cache: false,
+                    contentType: false,
+                    processData: false
+                });
+            });
+        });
+        
+        function downloadApiKey(apiKey) {
+          const keyObj = { "apiKey" : apiKey };
+          var dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(keyObj));
+          var downloadAnchorNode = document.createElement('a');
+          downloadAnchorNode.setAttribute("href",     dataStr);
+          downloadAnchorNode.setAttribute("download", "riusco_api_key" + ".json");
+          document.body.appendChild(downloadAnchorNode);
+          downloadAnchorNode.click();
+          downloadAnchorNode.remove();
+      }
+    </script>
+}

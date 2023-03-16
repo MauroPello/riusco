@@ -1,0 +1,80 @@
+@model SellViewModel
+@{
+    ViewData["Title"] = "Sell Products";
+}
+
+@if (Model.Outcome == "error")
+{
+    <div class="alert alert-danger alert-dismissible" style="z-index: 10000; margin-top: 1%; margin-left: 10%; margin-right: 10%;">
+        <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
+        Error Occurred!
+    </div>
+}
+
+<head>
+    <base href="~/" />
+</head>
+
+<div id="new-product-container" style="display: none; margin-bottom: 3%; border: .2rem solid grey; border-radius: 1rem;">
+    <form class="form-horizontal" method="post" enctype="multipart/form-data" style="padding: 2rem; width: 80%; margin: auto;">
+        <div class="omrs-input-group">
+            <label class="omrs-input-underlined">
+                <input type="text" name="name" placeholder=" " required>
+                <span class="omrs-input-label">Name</span>
+                <span class="omrs-input-helper">Enter name</span>
+            </label>
+        </div>
+        <div class="omrs-input-group">
+            <label class="omrs-input-underlined">
+                <textarea name="description" rows="3" placeholder=" " required></textarea>
+                <span class="omrs-input-label">Description</span>
+                <span class="omrs-input-helper">Enter description</span>
+            </label>
+        </div>
+        <div style="margin-bottom: 1.5rem;">
+            <h4 style="margin-left: 0.8375rem; color: grey">Image</h4>
+            <div class="image-upload-wrap">
+                <input class="file-upload-input" type='file' name="image" onchange="readURL(this);" accept="image/*" />
+                <div class="drag-text">
+                    <h3>Drag and drop a file or select add Image</h3>
+                </div>
+            </div>
+            <div class="file-upload-content">
+                <img class="file-upload-image" src="#" alt="your image"/>
+                <div class="image-title-wrap">
+                    <button type="button" onclick="removeUpload()" class="btn btn-danger">Remove <span class="image-title"> Image</span></button>
+                </div>
+            </div>
+        </div>
+        <div class="form-inline d-flex justify-content-center">
+            <button type="submit" name="button" value="insert" class="btn btn-primary" style="margin-right: 1%">Sell Product</button>
+            <button class="btn btn-danger" onclick="switch_new_product();">Close</button>
+        </div>
+    </form>
+</div>
+<button id="visibility-toggler" style="margin-left: auto; margin-right: auto; margin-bottom: 3%; display: block" class="btn btn-primary btn-lg" onclick="switch_new_product();">Sell a new Product</button>
+
+@(await Html.RenderComponentAsync<riusco_mvc.Components.ProductOverview>(RenderMode.ServerPrerendered, new { userId = Model.UserId }))
+
+@section Scripts {
+<script src="_framework/blazor.server.js"></script>
+<script>
+    $(document).ready(function () {
+        $('.custom-file-input').on("change", function () {
+            var fileName = $(this).val().split("\\").pop();
+            $(this).next('.custom-file-label').html(fileName);
+        });
+    });
+    
+    function switch_new_product(){
+        let div = document.getElementById("new-product-container");
+        if (div.style.display === "none"){
+         div.style.display = "block";
+        document.getElementById("visibility-toggler").style.display = "none";
+        } else {
+         div.style.display = "none";
+        document.getElementById("visibility-toggler").style.display = "block";
+        }
+    }
+</script>
+}

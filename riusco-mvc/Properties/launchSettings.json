@@ -1,0 +1,13 @@
+﻿{
+  "profiles": {
+    "riusco_mvc": {
+      "commandName": "Project",
+      "dotnetRunMessages": "true",
+      "launchBrowser": true,
+      "applicationUrl": "https://0.0.0.0:6066",
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Development"
+      }
+    }
+  }
+}

@@ -1,0 +1,80 @@
+@model ProductViewModel
+@{
+    ViewData["Title"] = Model.Product.Name;
+}
+
+<div class="product-container">
+    <div class="product-header">
+        <div class="product-image"><img src="/images/products/@Model.Product.Image" alt="product-image"/></div>
+        <div class="product-info">
+            <div style="display: flex; flex-direction: column;">
+                <div style="display: flex; flex-direction: row; justify-content: space-between;">
+                    <h7 style="color: dimgrey;">@Model.Product.LastUpdate</h7>
+                    <h7 style="color: dimgrey;">ID: @Model.Product.ProductID</h7>
+                </div>
+                <h4><b>@Model.Product.Name</b></h4>
+                <div style="display: flex; justify-content: space-between">
+                    <div style="display: flex; align-items: baseline;">
+                        <i class="fa fa-map-marker" aria-hidden="true" style="margin-right: .5rem;"></i>
+                        <h6>@Model.Owner.City</h6>
+                    </div>
+                    <div style="display: flex; align-items: center;">
+                        <h4 style="margin: 0 .5rem auto 0; font-weight: bold;">1</h4>
+                        <img src="/images/green_coin.png" alt="green-coin" width="25px" height="25px"/>
+                    </div>
+                </div>
+            </div>
+            @if (Model.Product.IsAvailable)
+            {
+                <div class="product-button">
+                    @if (Context.Session.GetInt32("userId").HasValue)
+                    {
+                        @if (Context.Session.GetInt32("userId").Value == Model.Owner.UserID)
+                        {
+                            <a class="btn btn-primary" style="margin-right: .5rem; padding: .2rem .5rem;" target="_blank" href='https://@Context.Request.Host/Home/UpdateProducts/@Model.Product.ProductID?name=@Model.Product.Name'>Edit</a>
+                            <form method="post">
+                                <button type="submit" name="button" value="delete" style="padding: .2rem .5rem;" class="btn btn-danger">Delete</button>
+                            </form>
+                        }
+                        else
+                        {
+                            <form method="post">
+                                <input type="hidden" name="ownerId" value="@Model.Owner.UserID"/>
+                                <button type="submit" name="button" value="buy" style="padding: .2rem .5rem;" class="btn btn-primary">Buy Now</button>
+                            </form>
+                        }
+                    }
+                </div>
+            }
+            <div style="display: flex">
+                <a href="/Home/User/@Model.Owner.UserID" style="color: black; text-decoration: none;" target="_blank">
+                    <div class="product-seller">
+                        <img src="/images/users/@Model.Owner.Image" alt="user-image"/>
+                        <h5 style="align-self: center; margin-left: min(10px, 2vw);">@Model.Owner.Name</h5>
+                    </div>
+                </a>
+            </div>
+        </div>
+    </div>
+    <div class="product-description">
+        <h4><b>Description</b></h4>
+        <h5>@Model.Product.Description</h5>
+    </div>
+</div>
+
+@section Scripts{
+<script>
+    window.onload = function () {
+        if (document.body.clientWidth > 482) 
+            document.getElementsByClassName("product-info")[0].style.height = (document.getElementsByClassName("product-image")[0].clientHeight * 0.8) + "px";
+        else
+            document.getElementsByClassName("product-info")[0].style.height = "auto";
+    }
+    window.addEventListener("resize", function () {
+        if (document.body.clientWidth > 482) 
+            document.getElementsByClassName("product-info")[0].style.height = (document.getElementsByClassName("product-image")[0].clientHeight * 0.8) + "px";
+        else
+            document.getElementsByClassName("product-info")[0].style.height = "auto";
+    });
+</script>
+}
